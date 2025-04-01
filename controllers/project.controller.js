@@ -16,6 +16,27 @@ exports.getAllProjects = async (req,res)=>{
     }
 }
 
+exports.getProject = async (req,res)=>{
+    try {
+        const {id} = req.params
+        const project = await prisma.projects.findUnique({
+            where:{
+                id:Number(id)
+            }
+        })
+        if(!project){
+            return res.status(404).json({message:"Project not found"})
+        }
+        res.status(200).json({data:project,message:"Project fetched successfully"})
+        
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message:err.message
+        })
+    }
+}
+
 exports.createProject = async (req,res)=>{
     try {
         const {title,headers,description,image,image2,image3,image4,type,video} = req.body
