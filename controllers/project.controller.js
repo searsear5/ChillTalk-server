@@ -19,9 +19,10 @@ exports.getAllProjects = async (req,res)=>{
 exports.getProject = async (req,res)=>{
     try {
         const {id} = req.params
+        const projectId = parseInt(id,10)
         const project = await prisma.projects.findUnique({
             where:{
-                id:Number(id)
+                id:projectId
             }
         })
         if(!project){
