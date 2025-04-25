@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/*
+model projects {
+  id Int@id @default(autoincrement())
+  title String @unique
+  headers String
+  description String
+  image String?
+  image2 String?
+  image3 String?
+  image4 String?
+  type String
+  video String
+}
+
+model users {
+  id Int@id @default(autoincrement())
+  username String @unique
+  password String
+  name String
+
+}
+*/
+
+model Projects {
+  pid         Int            @id @default(autoincrement())
+  title       String
+  headers     String
+  description String
+  type        String
+  video       String
+  dateTime    DateTime @default(now())
+  is_deleted  Boolean @default(false)
+
+  images      Image[]
+  logs        Project_logs[]
+}
+
+model Image {
+  imid Int    @id @default(autoincrement())
+  url  String
+  pid  Int
+  project Projects @relation(fields: [pid], references: [pid])
+
+  @@index([pid])
+}
+
+model Project_logs {
+  lid          Int      @id @default(autoincrement())
+  pid          Int
+  action_type  String
+  old_data     String @db.Text
+  new_data     String @db.Text
+  changed_date DateTime @default(now())
+  uid          Int
+
+  project Projects @relation(fields: [pid], references: [pid])
+  user    User     @relation(fields: [uid], references: [uid])
+
+  @@index([pid])
+  @@index([uid])
+}
+
+model User {
+  uid        Int       @id @default(autoincrement())
+  username   String    @unique
+  password   String
+  created_at DateTime @default(now())
+  first_name String
+  last_name  String
+  deleted_at DateTime?
+  email      String    @unique
+  phone      String
+
+  logs       Project_logs[]
+  user_role  User_role[]
+}
+
+model User_role {
+  urid Int @id @default(autoincrement())
+  uid Int
+  rid Int
+
+  user    User     @relation(fields: [uid], references: [uid])
+  @@index([uid])
+  role    Role     @relation(fields: [rid], references: [rid])
+  @@index([rid])
+}
+
+model Role {
+  rid Int @id @default(autoincrement())
+  name String @unique
+  description String
+
+  
+
+  user_role User_role[]
+  role_permission Role_permission[]
+  
+}
+
+model Role_permission {
+  rpid Int @id @default(autoincrement())
+  rid Int
+  pid Int
+
+  role Role @relation(fields: [rid], references: [rid])
+  @@index([rid])
+  permission Permission @relation(fields: [pid], references: [pid])
+  @@index([pid])
+}
+
+model Permission {
+  pid Int @id @default(autoincrement())
+  name String @unique
+  description String
+
+  role_permission Role_permission[]
+}
+

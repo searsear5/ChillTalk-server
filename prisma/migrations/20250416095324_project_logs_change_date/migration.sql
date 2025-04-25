@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `project_logs` MODIFY `changed_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
